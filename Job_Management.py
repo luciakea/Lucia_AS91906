@@ -36,9 +36,9 @@ class JobManagementGUI:
         self.entry_frame = Frame(parent)
 
         title_label = Label(self.entry_frame, text="Enter Job Details:")
-        title_label.grid(row=0, column=0, columnspan=2)
+        title_label.grid(row = 0, column = 0, columnspan = 2, pady = 5)
         num_desc_label = Label(self.entry_frame, text="Job number:")
-        num_desc_label.grid(row=1, column=0)
+        num_desc_label.grid(row = 1, column = 0, pady = 5)
 
         self.num_label = Label(self.entry_frame, text=self.next_id)
         self.num_label.grid(row=1, column=1)
@@ -50,21 +50,21 @@ class JobManagementGUI:
         dist_desc_label = Label(self.entry_frame, text="Distance travelled (in km):")
         dist_desc_label.grid(row=3, column=0)
         self.dist_slider = Scale(self.entry_frame, orient=HORIZONTAL, variable=self.distance, sliderlength="15px")
-        self.dist_slider.grid(row=3, column=1)
+        self.dist_slider.grid(row = 3, column = 1, pady = 10, sticky = N)
         self.virus_check = Checkbutton(self.entry_frame, text="Virus Protection", variable=self.virus, onvalue=1,
                                        offvalue=0, command=self.toggle_min)
-        self.virus_check.grid(row=4, column=0)
+        self.virus_check.grid(row = 4, column = 0, pady = 10)
         self.wof_check = Checkbutton(self.entry_frame, text="WOF and tune", variable=self.wof, onvalue=1, offvalue=0)
-        self.wof_check.grid(row=4, column=1)
+        self.wof_check.grid(row = 4, column = 1, pady = 10)
         self.min_desc_label = Label(self.entry_frame, text="Minutes spent:")
-        self.min_desc_label.grid(row=5, column=0)
-        self.min_entry = Entry(self.entry_frame, textvariable=self.minutes, state=DISABLED)
-        self.min_entry.grid(row=6, column=0)
+        self.min_desc_label = Label(self.entry_frame, text = "Minutes spent:", fg = "#949494")
+        self.min_entry = Entry(self.entry_frame, textvariable=self.minutes, state=DISABLED, width=5)
+        self.min_entry.grid(row=6, column=0, pady=5)
         self.cancel_but = Button(self.entry_frame, text="Cancel")
-        self.cancel_but.grid(row=7, column=0)
+        self.cancel_but.grid(row = 7, column = 0, pady = 10)
         self.submit_but = Button(self.entry_frame, text="Submit", command=self.printjob)
-        self.submit_but.grid(row=7, column=1)
-        self.entry_frame.grid(row=0, column=0)
+        self.submit_but.grid(row=7, column=1, pady=10)
+        self.entry_frame.grid(row = 0, column = 0, padx = 10, pady = 5)
 
     def printjob(self):
         min_number = int(self.minutes.get())
@@ -99,8 +99,10 @@ class JobManagementGUI:
     def toggle_min(self):
         if self.virus.get() == 1:
             self.min_entry.configure(state=NORMAL)
+            self.min_desc_label.configure(fg="black")
         else:
             self.min_entry.configure(state=DISABLED)
+            self.min_desc_label.configure(fg="#949494")
             self.minutes.set("0")
 
     def calc_charge(self, minutes, virus, wof, dist):
