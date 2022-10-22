@@ -1,6 +1,6 @@
 # Lucia Kearney
-# Combining both job display frame and job entry frame in one program (no switching between frames yet)
-# version 8
+# Made 'new job' and 'cancel' buttons functional allowing user to switch between the job display frame and job entry frame
+# version 9
 
 from tkinter import *
 
@@ -56,7 +56,7 @@ class JobManagementGUI:
                                    text="Displaying Job: {}/{}".format(self.position + 1, len(self.job_list)))
         self.display_label.grid(row=0, column=0, pady=10)
 
-        self.add_but = Button(self.display_frame, text="New Job")
+        self.add_but = Button(self.display_frame, text="New Job", command=self.new_job)
         self.add_but.grid(row=0, column=1)
 
         disp_num_desc_label = Label(self.display_frame, text="Job number:")
@@ -126,11 +126,30 @@ class JobManagementGUI:
         self.min_entry = Entry(self.entry_frame, textvariable=self.minutes, state=DISABLED, width=5)
         self.min_entry.grid(row=6, column=0, pady=5)
 
-        self.cancel_but = Button(self.entry_frame, text="Cancel")
+        self.cancel_but = Button(self.entry_frame, text="Cancel", command=self.cancel_entry)
         self.cancel_but.grid(row=7, column=0, pady=10)
 
         self.submit_but = Button(self.entry_frame, text="Submit", command=self.printjob)
         self.submit_but.grid(row=7, column=1, pady=10)
+
+        # this method opens the entry frame to submit a new job
+        def new_job(self):
+            self.display_frame.grid_remove()
+            self.entry_frame.grid(row=0, column=0, padx=10, pady=5)
+
+        # this method hides the entry frame and clears the entry fields
+        def cancel_entry(self):
+            self.entry_frame.grid_remove()
+            self.display_frame.grid()
+            self.customer_name.set("")
+            self.distance.set(0)
+            self.virus.set(0)
+            self.wof.set(0)
+            self.minutes.set("0")
+            self.min_entry.configure(state=DISABLED)
+            self.check_pos_update()
+
+        # this method prints submitted jobs to the shell
 
     def printjob(self):
         min_number = int(self.minutes.get())
@@ -147,8 +166,9 @@ class JobManagementGUI:
         charge = self.calc_charge(min_number, virus_selected, wof_selected, self.distance.get())
 
         self.job_list.append(
-            Job(self.next_id, self.customer_name.get(), self.distance.get(), virus_selected, wof_selected, min_number,
-                charge))
+            self.job_list.append(
+                Job(self.next_id, self.customer_name.get().title(), self.distance.get(), virus_selected, wof_selected,
+                    min_number, charge)));
 
         print(self.job_list[-1].num)
         print(self.job_list[-1].name)
@@ -162,6 +182,8 @@ class JobManagementGUI:
         self.next_id = len(self.job_list) + 1
         self.num_label.configure(text=self.next_id)
 
+        # this method disables and enables the minutes entry
+
     def toggle_min(self):
         if self.virus.get() == 1:
             self.min_entry.configure(state=NORMAL)
@@ -171,6 +193,7 @@ class JobManagementGUI:
             self.min_desc_label.configure(fg="#949494")
             self.minutes.set("0")
 
+    # this method calculates the charge for a job
     def calc_charge(self, minutes, virus, wof, dist):
         charge = 0
         if virus == True:
@@ -185,14 +208,17 @@ class JobManagementGUI:
 
         return charge
 
+    # this method scrolls to the next job in the display frame
     def next(self):
         self.position += 1
         self.check_pos_update()
 
+    # this method scrolls to the previous job in the display frame
     def back(self):
         self.position -= 1
         self.check_pos_update()
 
+    # this method ensures that display doesn't try to exceed the number of jobs stored and updates the display properly
     def check_pos_update(self):
         if self.position == len(self.job_list) - 1:
             self.next_but.configure(state=DISABLED)
