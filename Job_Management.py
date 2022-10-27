@@ -1,6 +1,6 @@
 # Lucia Kearney
-# Error-handling to ensure at least one checkbox is ticked and error-handling for minutes entry added
-# Version 13
+# Minute entry error-handling now complete
+# Version 14
 
 from tkinter import *
 
@@ -138,7 +138,7 @@ class JobManagementGUI:
         self.cancel_but = Button(self.entry_frame, text="Cancel", command=self.cancel_entry)
         self.cancel_but.grid(row=7, column=0, pady=10)
 
-        self.submit_but = Button(self.entry_frame, text="Submit", command=self.submitjob)
+        self.submit_but = Button(self.entry_frame, text = "Submit", command = self.check_job)
         self.submit_but.grid(row=7, column=1, pady=10)
 
         self.confirmation_label = Label(self.entry_frame, text="", fg="green")
@@ -167,17 +167,21 @@ class JobManagementGUI:
             self.check_pos_update()
 
             # prevents error messages turning strings into ints
+            # and makes sure that the int is above 0
             def check_int(self, number):
                 try:
-                    int(number)
-                    return True
+                    valid_num = int(number)
+                    if valid_num > 0:
+                        return True
+                    else:
+                        return False
                 except ValueError:
                     return False
 
             # this method creates a job object to "submit" the job
             # clears the entry fields, updates the confimation label
             # and also prints for testing purposes
-            def actualsubmit(self, min_number, virus_selected, wof_selected):
+            def submit_job(self, min_number, virus_selected, wof_selected):
                 min_number = int(self.minutes.get())
                 charge = self.calc_charge(min_number, virus_selected, wof_selected, self.distance.get())
 
@@ -202,7 +206,7 @@ class JobManagementGUI:
 
             # this method makes sure all input is valid before submitting
 
-    def submitjob(self):
+    def check_job(self):
         if self.customer_name.get() != "":
             if self.wof.get() != 0 or self.virus.get() != 0:
                 if self.virus.get() == 1:
@@ -218,13 +222,13 @@ class JobManagementGUI:
                 if virus_selected == True:
                     valid_minutes = self.check_int(self.minutes.get())
                     if valid_minutes == True:
-                        self.actualsubmit(self.minutes.get(), virus_selected, wof_selected)
+                        self.submit_job(self.minutes.get(), virus_selected, wof_selected)
                     else:
-                        print("check!")
                         self.confirmation_label.configure(
-                            text="Please enter a whole number for minutes spent on Virus Protection", fg="red")
+                            text="Please enter a whole number greater than 0\nfor minutes spent on Virus Protection",
+                            fg="red")
                 else:
-                    self.actualsubmit(self.minutes.get(), virus_selected, wof_selected)
+                    self.submit_job(self.minutes.get(), virus_selected, wof_selected)
             else:
                 self.confirmation_label.configure(text = "Please tick either Virus Protection or WOF and tune", fg = "red")
         else:
