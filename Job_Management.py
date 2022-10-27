@@ -1,5 +1,6 @@
 # Lucia Kearney
-# Removed print statements used for testing
+# User suggested changes implemented. Cancel button text changed to 'Back to menu'.
+# Checkbox error message changed and distance entry input added.
 # Version 15
 
 from tkinter import *
@@ -112,37 +113,39 @@ class JobManagementGUI:
         name_desc_label.grid(row=2, column=0)
 
         self.name_entry = Entry(self.entry_frame, textvariable=self.customer_name)
-        self.name_entry.grid(row=2, column=1)
+        self.name_entry.grid(row = 2, column = 1, pady = 10)
 
         dist_desc_label = Label(self.entry_frame, text="Distance travelled (in km):")
         dist_desc_label.grid(row=3, column=0)
 
-        self.dist_slider = Scale(self.entry_frame, orient=HORIZONTAL, variable=self.distance, sliderlength="15px",
-                                 from_=1, to=100)
+        self.dist_entry = Entry(self.entry_frame, width=3, textvariable=self.distance)
+        self.dist_entry.grid(row=3, column=1, sticky=S)
 
-        self.dist_slider.grid(row=3, column=1, pady=10, sticky=N)
+        self.dist_slider = Scale(self.entry_frame, orient=HORIZONTAL, variable=self.distance, sliderlength="15px",
+                                 from_=1, to=100, showvalue=0)
+        self.dist_slider.grid(row=4, column=1, sticky=N)
 
         self.virus_check = Checkbutton(self.entry_frame, text="Virus Protection", variable=self.virus, onvalue=1,
                                        offvalue=0, command=self.toggle_min)
-        self.virus_check.grid(row=4, column=0, pady=10)
+        self.virus_check.grid(row = 5, column = 0, pady = 10)
 
         self.wof_check = Checkbutton(self.entry_frame, text="WOF and tune", variable=self.wof, onvalue=1, offvalue=0)
-        self.wof_check.grid(row=4, column=1, pady=10)
+        self.wof_check.grid(row=5, column=1, pady=10)
 
         self.min_desc_label = Label(self.entry_frame, text="Minutes spent:", fg="#949494")
-        self.min_desc_label.grid(row=5, column=0)
+        self.min_desc_label.grid(row=6, column=0)
 
         self.min_entry = Entry(self.entry_frame, textvariable=self.minutes, state=DISABLED, width=5)
-        self.min_entry.grid(row=6, column=0, pady=5)
+        self.min_entry.grid(row=7, column=0, pady=5)
 
-        self.cancel_but = Button(self.entry_frame, text="Cancel", command=self.cancel_entry)
-        self.cancel_but.grid(row=7, column=0, pady=10)
+        self.cancel_but = Button(self.entry_frame, text="Back to menu", command=self.cancel_entry)
+        self.cancel_but.grid(row=8, column=0, pady=10)
 
         self.submit_but = Button(self.entry_frame, text = "Submit", command = self.check_job)
-        self.submit_but.grid(row=7, column=1, pady=10)
+        self.submit_but.grid(row=8, column=1, pady=10)
 
         self.confirmation_label = Label(self.entry_frame, text="", fg="green")
-        self.confirmation_label.grid(row=8, column=0, columnspan=2)
+        self.confirmation_label.grid(row=9, column=0, columnspan=2)
 
         # this method opens the entry frame to submit a new job
         def new_job(self):
@@ -220,7 +223,7 @@ class JobManagementGUI:
                 else:
                     self.submit_job(self.minutes.get(), virus_selected, wof_selected)
             else:
-                self.confirmation_label.configure(text = "Please tick either Virus Protection or WOF and tune", fg = "red")
+                self.confirmation_label.configure(text = "Please tick either Virus Protection and/or WOF and tune", fg = "red")
         else:
             self.confirmation_label.configure(text = "Please enter a customer name!", fg = "red")
 
