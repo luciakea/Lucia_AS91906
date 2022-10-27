@@ -1,6 +1,6 @@
-# Lucia Kearney
-# Made 'new job' and 'cancel' buttons functional allowing user to switch between the job display frame and job entry frame
-# version 9
+# Lucia Kearney Removed hard-coded jobs used for testing and linked entered jobs to display frame. Error message
+# added for when no jobs are entered also
+# Version 10
 
 from tkinter import *
 
@@ -35,6 +35,8 @@ class JobManagementGUI:
         self.job_list.append(Job(2, "Dash", 46, False, True, 0, 130.5))
         self.job_list.append(Job(3, "Hippo", 1, True, True, 50, 150))
         self.job_list.append(Job(4, "Honey", 4, True, False, 7, 15.6))
+
+        # Suzy's logo
         self.logo_img = PhotoImage(file="logo.gif")
 
         # variables for the entry frame
@@ -59,22 +61,22 @@ class JobManagementGUI:
         self.add_but = Button(self.display_frame, text="New Job", command=self.new_job)
         self.add_but.grid(row=0, column=1)
 
-        disp_num_desc_label = Label(self.display_frame, text="Job number:")
-        disp_num_desc_label.grid(row=1, column=0, sticky=E, padx=10)
+        self.disp_num_desc_label = Label(self.display_frame, text="Job number:")
+        self.disp_num_desc_label.grid(row=1, column=0, sticky=E, padx=10)
 
-        self.job_num_label = Label(self.display_frame, text=self.job_list[self.position].num)
+        self.job_num_label = Label(self.display_frame, text="")
         self.job_num_label.grid(row=1, column=1, sticky=W, padx=10)
 
-        disp_name_desc_label = Label(self.display_frame, text="Customer name:")
-        disp_name_desc_label.grid(row=2, column=0, sticky=E, padx=10)
+        self.disp_name_desc_label = Label(self.display_frame, text="Customer name:")
+        self.disp_name_desc_label.grid(row=2, column=0, sticky=E, padx=10)
 
-        self.name_label = Label(self.display_frame, text=self.job_list[self.position].name)
+        self.name_label = Label(self.display_frame, text="")
         self.name_label.grid(row=2, column=1, sticky=W, padx=10)
 
-        disp_charge_desc_label = Label(self.display_frame, text="Job charge:")
-        disp_charge_desc_label.grid(row=3, column=0, sticky=E, padx=10)
+        self.disp_charge_desc_label = Label(self.display_frame, text="Job charge:")
+        self.disp_charge_desc_label.grid(row=3, column=0, sticky=E, padx=10)
 
-        self.charge_label = Label(self.display_frame, text="${:.2f}".format(self.job_list[self.position].charge))
+        self.charge_label = Label(self.display_frame, text="")
         self.charge_label.grid(row=3, column=1, sticky=W, padx=10)
 
         self.back_but = Button(self.display_frame, text="Back", command=self.back, state=DISABLED)
@@ -83,10 +85,15 @@ class JobManagementGUI:
         self.next_but = Button(self.display_frame, text="Next", command=self.next)
         self.next_but.grid(row=4, column=1, pady=10, sticky=E, padx=25)
 
+        self.no_job_label = Label(self.display_frame,
+                                  text="There are currently no jobs entered.\nPress New Job to enter a job!")
+
         logo = Label(self.display_frame, image=self.logo_img)
         logo.grid(row=5, column=0, columnspan=2)
 
         self.display_frame.grid(row=0, column=0, padx=5, pady=5)
+
+        self.check_pos_update()
 
         # entry frame GUI
 
@@ -220,20 +227,35 @@ class JobManagementGUI:
 
     # this method ensures that display doesn't try to exceed the number of jobs stored and updates the display properly
     def check_pos_update(self):
-        if self.position == len(self.job_list) - 1:
-            self.next_but.configure(state=DISABLED)
-        else:
-            self.next_but.configure(state=NORMAL)
+        # if there are jobs that have been inputted
+        if len(self.job_list) > 0:
+            # shows the necessary labels
+            self.disp_num_desc_label.grid()
+            self.disp_name_desc_label.grid()
+            self.disp_charge_desc_label.grid()
+            self.no_job_label.grid_remove()
 
-        if self.position == 0:
-            self.back_but.configure(state=DISABLED)
-        else:
-            self.back_but.configure(state=NORMAL)
+            # disabling and enabling buttons depending on the position
+            if self.position == len(self.job_list) - 1:
+                self.next_but.configure(state=DISABLED)
+            else:
+                self.next_but.configure(state=NORMAL)
 
-        self.display_label.configure(text="Displaying Job: {}/{}".format(self.position + 1, len(self.job_list)))
-        self.job_num_label.configure(text=self.job_list[self.position].num)
-        self.name_label.configure(text=self.job_list[self.position].name)
-        self.charge_label.configure(text="${:.2f}".format(self.job_list[self.position].charge))
+            if self.position == 0:
+                self.back_but.configure(state=DISABLED)
+            else:
+                self.back_but.configure(state=NORMAL)
+
+            self.display_label.configure(text="Displaying Job: {}/{}".format(self.position + 1, len(self.job_list)))
+            self.job_num_label.configure(text=self.job_list[self.position].num)
+            self.name_label.configure(text=self.job_list[self.position].name)
+            self.charge_label.configure(text="${:.2f}".format(self.job_list[self.position].charge))
+        # if no jobs have been inputted, don't try and show jobs
+        else:
+            self.disp_num_desc_label.grid_remove()
+            self.disp_name_desc_label.grid_remove()
+            self.disp_charge_desc_label.grid_remove()
+            self.no_job_label.grid(row=2, column=0, columnspan=2)
 
 
 # main routine
