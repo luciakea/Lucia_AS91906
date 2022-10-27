@@ -1,6 +1,6 @@
 # Lucia Kearney
-# Minute entry error-handling now complete
-# Version 14
+# Removed print statements used for testing
+# Version 15
 
 from tkinter import *
 
@@ -180,7 +180,6 @@ class JobManagementGUI:
 
             # this method creates a job object to "submit" the job
             # clears the entry fields, updates the confimation label
-            # and also prints for testing purposes
             def submit_job(self, min_number, virus_selected, wof_selected):
                 min_number = int(self.minutes.get())
                 charge = self.calc_charge(min_number, virus_selected, wof_selected, self.distance.get())
@@ -188,15 +187,6 @@ class JobManagementGUI:
                 self.job_list.append(
                     Job(self.next_id, self.customer_name.get().title(), self.distance.get(), virus_selected,
                         wof_selected, min_number, charge))
-
-                print(self.job_list[-1].num)
-                print(self.job_list[-1].name)
-                print(self.job_list[-1].dist)
-                print(self.job_list[-1].virus)
-                print(self.job_list[-1].wof)
-                print(self.job_list[-1].minutes)
-                print(self.job_list[-1].charge)
-                print()
 
                 self.next_id = len(self.job_list) + 1
                 self.num_label.configure(text=self.next_id)
