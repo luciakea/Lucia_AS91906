@@ -1,6 +1,6 @@
 # Lucia Kearney
-# Error-handling added for distance slider and name entry
-# Version 12
+# Error-handling to ensure at least one checkbox is ticked and error-handling for minutes entry added
+# Version 13
 
 from tkinter import *
 
@@ -166,41 +166,69 @@ class JobManagementGUI:
             self.clear_entry_fields()
             self.check_pos_update()
 
-        # this method prints submitted jobs to the shell
+            # prevents error messages turning strings into ints
+            def check_int(self, number):
+                try:
+                    int(number)
+                    return True
+                except ValueError:
+                    return False
+
+            # this method creates a job object to "submit" the job
+            # clears the entry fields, updates the confimation label
+            # and also prints for testing purposes
+            def actualsubmit(self, min_number, virus_selected, wof_selected):
+                min_number = int(self.minutes.get())
+                charge = self.calc_charge(min_number, virus_selected, wof_selected, self.distance.get())
+
+                self.job_list.append(
+                    Job(self.next_id, self.customer_name.get().title(), self.distance.get(), virus_selected,
+                        wof_selected, min_number, charge))
+
+                print(self.job_list[-1].num)
+                print(self.job_list[-1].name)
+                print(self.job_list[-1].dist)
+                print(self.job_list[-1].virus)
+                print(self.job_list[-1].wof)
+                print(self.job_list[-1].minutes)
+                print(self.job_list[-1].charge)
+                print()
+
+                self.next_id = len(self.job_list) + 1
+                self.num_label.configure(text=self.next_id)
+                self.clear_entry_fields()
+                self.confirmation_label.configure(text="Job {} has been submitted!".format(self.next_id - 1),
+                                                  fg="green")
+
+            # this method makes sure all input is valid before submitting
 
     def submitjob(self):
         if self.customer_name.get() != "":
-            min_number = int(self.minutes.get())
-            if self.virus.get() == 1:
-                virus_selected = True
+            if self.wof.get() != 0 or self.virus.get() != 0:
+                if self.virus.get() == 1:
+                    virus_selected = True
+                else:
+                    virus_selected = False
+
+                if self.wof.get() == 1:
+                    wof_selected = True
+                else:
+                    wof_selected = False
+
+                if virus_selected == True:
+                    valid_minutes = self.check_int(self.minutes.get())
+                    if valid_minutes == True:
+                        self.actualsubmit(self.minutes.get(), virus_selected, wof_selected)
+                    else:
+                        print("check!")
+                        self.confirmation_label.configure(
+                            text="Please enter a whole number for minutes spent on Virus Protection", fg="red")
+                else:
+                    self.actualsubmit(self.minutes.get(), virus_selected, wof_selected)
             else:
-                virus_selected = False
-                min_number = 0
-            if self.wof.get() == 1:
-                wof_selected = True
-            else:
-                wof_selected = False
-            charge = self.calc_charge(min_number, virus_selected, wof_selected, self.distance.get())
-
-            self.job_list.append(
-                Job(self.next_id, self.customer_name.get().title(), self.distance.get(), virus_selected, wof_selected,
-                    min_number, charge))
-
-            print(self.job_list[-1].num)
-            print(self.job_list[-1].name)
-            print(self.job_list[-1].dist)
-            print(self.job_list[-1].virus)
-            print(self.job_list[-1].wof)
-            print(self.job_list[-1].minutes)
-            print(self.job_list[-1].charge)
-            print()
-
-            self.next_id = len(self.job_list) + 1
-            self.num_label.configure(text=self.next_id)
-            self.clear_entry_fields()
-            self.confirmation_label.configure(text="Job {} has been submitted!".format(self.next_id - 1), fg="green")
+                self.confirmation_label.configure(text = "Please tick either Virus Protection or WOF and tune", fg = "red")
         else:
-            self.confirmation_label.configure(text = "Please enter a customer name!".format(self.next_id - 1), fg = "red")
+            self.confirmation_label.configure(text = "Please enter a customer name!", fg = "red")
 
         # this method disables and enables the minutes entry
 
