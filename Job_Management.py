@@ -1,9 +1,9 @@
 # Lucia Kearney
-# Button added allowing jobs to be edited. Entry frame is opened with all current saved job details
-# and button over submit button to allow job to replace the changed job.
-# Version 17
+# Summary frame added and button linking to display frame
+# Version 18
 
 from tkinter import *
+from tkinter.scrolledtext import *
 
 # setting constants for calculating the job cost
 VIRUS_RATE = 0.8
@@ -94,7 +94,7 @@ class JobManagementGUI:
         self.edit_but = Button(self.display_frame, text="Edit Job", command=self.edit)
         self.edit_but.grid(row=5, column=0, pady=10)
 
-        self.all_but = Button(self.display_frame, text="View All")
+        self.all_but = Button(self.display_frame, text="View All", command=self.show_summ)
         self.all_but.grid(row=5, column=1, pady=10)
 
         logo = Label(self.display_frame, image=self.logo_img)
@@ -156,6 +156,37 @@ class JobManagementGUI:
 
         self.confirmation_label = Label(self.entry_frame, text="", fg="green")
         self.confirmation_label.grid(row=9, column=0, columnspan=2)
+
+        # summary frame GUI
+
+        self.summary_frame = Frame(parent)
+
+        summary_title_label = Label(self.summary_frame, text="Showing all Jobs")
+        summary_title_label.grid(row=0, column=0, pady=5, padx=10)
+
+        self.back_menu_but = Button(self.summary_frame, text="Back", command=self.back_disp)
+        self.back_menu_but.grid(row=0, column=1, pady=5, padx=10, sticky=W)
+
+        self.job_display = ScrolledText(self.summary_frame, width=35, height=10, wrap="word")
+        self.job_display.grid(row=1, column=0, columnspan=2, padx=20, pady=10)
+
+        total_dist_label = Label(self.summary_frame, text="Total distance travelled:")
+        total_dist_label.grid(row=2, column=0, pady=5)
+
+        self.total_dist = Label(self.summary_frame, text="TEST")
+        self.total_dist.grid(row=2, column=1, pady=5, sticky=W)
+
+        total_charge_label = Label(self.summary_frame, text="Total money charged:")
+        total_charge_label.grid(row=3, column=0)
+
+        self.total_charge = Label(self.summary_frame, text="TEST")
+        self.total_charge.grid(row=3, column=1, pady=5, sticky=W)
+
+        total_jobs_label = Label(self.summary_frame, text="Total number of jobs:")
+        total_jobs_label.grid(row=4, column=0, pady=5)
+
+        self.total_jobs = Label(self.summary_frame, text="TEST")
+        self.total_jobs.grid(row=4, column=1, pady=5, sticky=W)
 
         # this method opens the entry frame to submit a new job
         def new_job(self):
@@ -355,6 +386,42 @@ class JobManagementGUI:
             self.disp_name_desc_label.grid_remove()
             self.disp_charge_desc_label.grid_remove()
             self.no_job_label.grid(row=2, column=0, columnspan=2)
+
+    # this method hides the display frame and shows the summary frame
+    def show_summ(self):
+        self.display_frame.grid_remove()
+        self.summary_frame.grid(row=0, column=0, pady=5)
+
+        # clearing the job display
+        self.job_display.configure(state="normal")
+        self.job_display.delete("1.0", END)
+
+        # setting variables for the totals
+        distance = 0
+        charges = 0
+        total = 0
+
+        # displaying the jobs
+        if len(self.job_list) < 1:
+            self.job_display.insert(END, "No jobs have been inputted yet!")
+        else:
+            for job in self.job_list:
+                self.job_display.insert(END, "Job {} - {} km - ${:.2f}\n".format(job.num, job.dist, job.charge))
+                distance += job.dist
+                charges += job.charge
+                total += 1
+
+        self.job_display.configure(state="disabled")
+
+        # putting the totals in the labels
+        self.total_dist.configure(text="{} km".format(distance))
+        self.total_charge.configure(text="${:.2f}".format(charges))
+        self.total_jobs.configure(text=total)
+
+    # this method shows the display frame and hides the summary frame
+    def back_disp(self):
+        self.summary_frame.grid_remove()
+        self.display_frame.grid()
 
 
 # main routine
