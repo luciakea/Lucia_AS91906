@@ -1,6 +1,6 @@
 # Lucia Kearney
-# Confirmation message added for when job is added and entry fields are cleared after a job is submitted
-# Version 11
+# Error-handling added for distance slider and name entry
+# Version 12
 
 from tkinter import *
 
@@ -117,7 +117,9 @@ class JobManagementGUI:
         dist_desc_label = Label(self.entry_frame, text="Distance travelled (in km):")
         dist_desc_label.grid(row=3, column=0)
 
-        self.dist_slider = Scale(self.entry_frame, orient=HORIZONTAL, variable=self.distance, sliderlength="15px")
+        self.dist_slider = Scale(self.entry_frame, orient=HORIZONTAL, variable=self.distance, sliderlength="15px",
+                                 from_=1, to=100)
+
         self.dist_slider.grid(row=3, column=1, pady=10, sticky=N)
 
         self.virus_check = Checkbutton(self.entry_frame, text="Virus Protection", variable=self.virus, onvalue=1,
@@ -167,37 +169,38 @@ class JobManagementGUI:
         # this method prints submitted jobs to the shell
 
     def submitjob(self):
-        min_number = int(self.minutes.get())
-        if self.virus.get() == 1:
-            virus_selected = True
-        else:
-            virus_selected = False
-            min_number = 0
-        if self.wof.get() == 1:
-            wof_selected = True
-        else:
-            wof_selected = False
+        if self.customer_name.get() != "":
+            min_number = int(self.minutes.get())
+            if self.virus.get() == 1:
+                virus_selected = True
+            else:
+                virus_selected = False
+                min_number = 0
+            if self.wof.get() == 1:
+                wof_selected = True
+            else:
+                wof_selected = False
+            charge = self.calc_charge(min_number, virus_selected, wof_selected, self.distance.get())
 
-        charge = self.calc_charge(min_number, virus_selected, wof_selected, self.distance.get())
-
-        self.job_list.append(
             self.job_list.append(
                 Job(self.next_id, self.customer_name.get().title(), self.distance.get(), virus_selected, wof_selected,
-                    min_number, charge)));
+                    min_number, charge))
 
-        print(self.job_list[-1].num)
-        print(self.job_list[-1].name)
-        print(self.job_list[-1].dist)
-        print(self.job_list[-1].virus)
-        print(self.job_list[-1].wof)
-        print(self.job_list[-1].minutes)
-        print(self.job_list[-1].charge)
-        print()
+            print(self.job_list[-1].num)
+            print(self.job_list[-1].name)
+            print(self.job_list[-1].dist)
+            print(self.job_list[-1].virus)
+            print(self.job_list[-1].wof)
+            print(self.job_list[-1].minutes)
+            print(self.job_list[-1].charge)
+            print()
 
-        self.next_id = len(self.job_list) + 1
-        self.num_label.configure(text=self.next_id)
-        self.clear_entry_fields()
-        self.confirmation_label.configure(text="Job {} has been submitted!".format(self.next_id - 1))
+            self.next_id = len(self.job_list) + 1
+            self.num_label.configure(text=self.next_id)
+            self.clear_entry_fields()
+            self.confirmation_label.configure(text="Job {} has been submitted!".format(self.next_id - 1), fg="green")
+        else:
+            self.confirmation_label.configure(text = "Please enter a customer name!".format(self.next_id - 1), fg = "red")
 
         # this method disables and enables the minutes entry
 
