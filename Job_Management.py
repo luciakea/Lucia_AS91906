@@ -1,6 +1,6 @@
-# Lucia Kearney Removed hard-coded jobs used for testing and linked entered jobs to display frame. Error message
-# added for when no jobs are entered also
-# Version 10
+# Lucia Kearney
+# Confirmation message added for when job is added and entry fields are cleared after a job is submitted
+# Version 11
 
 from tkinter import *
 
@@ -82,7 +82,7 @@ class JobManagementGUI:
         self.back_but = Button(self.display_frame, text="Back", command=self.back, state=DISABLED)
         self.back_but.grid(row=4, column=0, pady=10, sticky=W, padx=25)
 
-        self.next_but = Button(self.display_frame, text="Next", command=self.next)
+        self.next_but = Button(self.display_frame, text="Next", command=self.next, state=DISABLED)
         self.next_but.grid(row=4, column=1, pady=10, sticky=E, padx=25)
 
         self.no_job_label = Label(self.display_frame,
@@ -136,8 +136,11 @@ class JobManagementGUI:
         self.cancel_but = Button(self.entry_frame, text="Cancel", command=self.cancel_entry)
         self.cancel_but.grid(row=7, column=0, pady=10)
 
-        self.submit_but = Button(self.entry_frame, text="Submit", command=self.printjob)
+        self.submit_but = Button(self.entry_frame, text="Submit", command=self.submitjob)
         self.submit_but.grid(row=7, column=1, pady=10)
+
+        self.confirmation_label = Label(self.entry_frame, text="", fg="green")
+        self.confirmation_label.grid(row=8, column=0, columnspan=2)
 
         # this method opens the entry frame to submit a new job
         def new_job(self):
@@ -145,20 +148,25 @@ class JobManagementGUI:
             self.entry_frame.grid(row=0, column=0, padx=10, pady=5)
 
         # this method hides the entry frame and clears the entry fields
-        def cancel_entry(self):
-            self.entry_frame.grid_remove()
-            self.display_frame.grid()
+        def clear_entry_fields(self):
             self.customer_name.set("")
             self.distance.set(0)
             self.virus.set(0)
             self.wof.set(0)
             self.minutes.set("0")
             self.min_entry.configure(state=DISABLED)
+            self.confirmation_label.configure(text="")
+
+        # this method hides the entry frame and clears the entry fields
+        def cancel_entry(self):
+            self.entry_frame.grid_remove()
+            self.display_frame.grid()
+            self.clear_entry_fields()
             self.check_pos_update()
 
         # this method prints submitted jobs to the shell
 
-    def printjob(self):
+    def submitjob(self):
         min_number = int(self.minutes.get())
         if self.virus.get() == 1:
             virus_selected = True
@@ -188,6 +196,8 @@ class JobManagementGUI:
 
         self.next_id = len(self.job_list) + 1
         self.num_label.configure(text=self.next_id)
+        self.clear_entry_fields()
+        self.confirmation_label.configure(text="Job {} has been submitted!".format(self.next_id - 1))
 
         # this method disables and enables the minutes entry
 
