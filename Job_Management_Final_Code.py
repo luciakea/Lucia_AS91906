@@ -31,12 +31,6 @@ class JobManagementGUI:
         # a list that keeps track of the Job objects
         self.job_list = []
 
-        # example jobs for testing
-        self.job_list.append(Job(1, "Bindi", 20, True, True, 38, 147.9))
-        self.job_list.append(Job(2, "Dash", 46, False, True, 0, 130.5))
-        self.job_list.append(Job(3, "Hippo", 1, True, True, 50, 150))
-        self.job_list.append(Job(4, "Honey", 4, True, False, 7, 15.6))
-
         # Suzy's logo
         self.logo_img = PhotoImage(file="logo.gif")
 
